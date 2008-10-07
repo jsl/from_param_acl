@@ -18,23 +18,23 @@ module FromParamAcl
       def from_param_for(agent, action = nil, *options)
         case action
         when "show"
-          (object = self.from_param(*options)).is_readable_by?(agent) ? object : nil
+          (object = self.from_param(*options)).readable_by?(agent) ? object : nil
         when "edit", "update"
-          (object = self.from_param(*options)).is_updatable_by?(agent) ? object : nil
+          (object = self.from_param(*options)).updatable_by?(agent) ? object : nil
         when "destroy", nil
-          (object = self.from_param(*options)).is_deletable_by?(agent) ? object : nil
+          (object = self.from_param(*options)).deletable_by?(agent) ? object : nil
         end
       end
       
       # Override in model to define permissions for model reads.
       # Defaults to true, providing access to any user.
-      def is_readable_by?(agent = nil, current_context = nil)
+      def readable_by?(agent = nil, current_context = nil)
         true
       end
       
       # Override in model to define permissions for new object creation.
       # Defaults to true, providing access to any user.
-      def is_creatable_by?(agent = nil, current_context = nil)
+      def creatable_by?(agent = nil, current_context = nil)
         true
       end
     
@@ -42,20 +42,20 @@ module FromParamAcl
       
     # Override in model to define permissions for reading instances.
     # Defaults to true, providing access to any user.
-    def is_readable_by?(agent = nil)
+    def readable_by?(agent = nil)
       true
     end
     
     # Override in model to define permissions for updating instances.
     # Defaults to true, providing access to any user.
-    def is_updatable_by?(agent = nil)
+    def updatable_by?(agent = nil)
       true
     end
     
     # Override in model to define permissions for deleting instances.
-    # Defaults to ActiveRecords::Base#is_updatable_by?(agent)
-    def is_deletable_by?(agent = nil)
-      is_updatable_by?(agent)
+    # Defaults to ActiveRecords::Base#updatable_by?(agent)
+    def deletable_by?(agent = nil)
+      updatable_by?(agent)
     end
   end
   
@@ -102,15 +102,15 @@ module FromParamAcl
 
         case params[:action]
         when "index"
-          klass.is_readable_by?(current_user, @context)
+          klass.readable_by?(current_user, @context)
         when "show"
-          object && object.is_readable_by?(current_user)
+          object && object.readable_by?(current_user)
         when "new", "create"
-          klass.is_creatable_by?(current_user, @context)
+          klass.creatable_by?(current_user, @context)
         when "edit", "update"
-          object && object.is_updatable_by?(current_user)
+          object && object.updatable_by?(current_user)
         when "destroy"
-          object && object.is_deletable_by?(current_user)
+          object && object.deletable_by?(current_user)
         end
       end
   end
